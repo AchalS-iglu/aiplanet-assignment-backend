@@ -21,7 +21,6 @@ async def upload_pdf(file: Annotated[bytes, File()], name: str = Form(..., descr
     PDFHandler.add_file(file, name)
     return {"message": "PDF uploaded successfully"}
 
-
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     logger.info("Starting server...")
