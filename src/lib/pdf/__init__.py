@@ -11,7 +11,6 @@ class PDFFile:
         self.last_accessed = datetime.datetime.now()
         # Set the file name
         self.file_name = file_path.split('/')[-1]
-        return self.file_name
     
     def remove_file(self):
         # Remove the file from the directory
@@ -35,7 +34,7 @@ class _PDFHandler:
         # Get the pdf reader object
         self.pdfReader = PyPDF4.PdfFileReader
     
-    def add_file(self, blob, file_name):
+    def add_file(self, bytes, file_name):
         # Check for duplicates
         if file_name in self.files:
             # Generate a random string of 5 characters
@@ -43,10 +42,11 @@ class _PDFHandler:
             # Add the random string to the file name
             file_name = f'{random_string}_{file_name}'
         # Create a new file in the directory
-        with open(os.path.join(self.directory_path, file_name), 'wb') as file:
-            file.write(blob)
+        with open(os.path.join(self.directory_path, f"{file_name}.pdf"), 'wb') as file:
+            file.write(bytes)
         # Create a new file object
-        self.files[file_name] = PDFFile(os.path.join(self.directory_path, file_name))   
+        self.files[file_name] = PDFFile(os.path.join(self.directory_path, file_name))
+        return file_name
     
     def remove_file(self, file_name):
         # Get the file object
