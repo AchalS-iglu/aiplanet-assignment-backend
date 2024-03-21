@@ -37,14 +37,21 @@ class _PDFHandler:
         else:
             raise FileNotFoundError(f"File {file_name} not found")
     
-    def get_file(self, file_name):
+    def get_filename(self, file_name):
         file = next((file for file in self.files if file.endswith(file_name)), None)
         if file:
             # Return the file object
             return file
         else:
             raise FileNotFoundError(f"File {file_name} not found")
-
+    
+    def get_file(self, file_name):
+        # get the file path
+        file = self.get_filename(file_name)
+        # retrieve the file 
+        with open(file, 'rb') as f:
+            return f.read()
+        
 # Check if pdfs dir exists
 if not os.path.exists('pdfs'):
     # Create the directory
