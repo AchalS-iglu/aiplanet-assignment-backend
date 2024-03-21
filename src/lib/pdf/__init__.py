@@ -1,38 +1,15 @@
 import os
-import PyPDF4
 import datetime
 import random
 import string
-
-class PDFFile:
-    def __init__(self, file_path) -> None:
-        self.file_path = file_path
-        # Sets the last accessed time to the current time
-        self.last_accessed = datetime.datetime.now()
-        # Set the file name
-        self.file_name = file_path.split('/')[-1]
-    
-    def remove_file(self):
-        # Remove the file from the directory
-        os.remove(self.file_path)
-    
-    def extract_text(self, pdfReader):
-        # Reset the last accessed time
-        self.last_accessed = datetime.datetime.now()
-        # Extract the text from the pdf
-        return [pdfReader.getPage(i).extractText() for i in range(pdfReader.numPages)]
-    
+import fitz  # PyMuPDF    
 
 class _PDFHandler:
     def __init__(self, directory_path):
         # Set the directory path
         self.directory_path = directory_path
         # Get all the files in the directory and make their objects
-        self.files = {}
-        for file in os.listdir(self.directory_path):
-            self.files[file] = PDFFile(os.path.join(self.directory_path, file))
-        # Get the pdf reader object
-        self.pdfReader = PyPDF4.PdfFileReader
+        self.files = [os.path.join(directory_path, file) for file in os.listdir(directory_path) if file.endswith('.pdf')]
     
     def add_file(self, bytes, file_name):
         # Check for duplicates
@@ -42,25 +19,31 @@ class _PDFHandler:
             # Add the random string to the file name
             file_name = f'{random_string}_{file_name}'
         # Create a new file in the directory
-        with open(os.path.join(self.directory_path, f"{file_name}.pdf"), 'wb') as file:
+        file_path = os.path.join(self.directory_path, f"{file_name}.pdf")
+        with open(file_path, 'wb') as file:
             file.write(bytes)
-        # Create a new file object
-        self.files[file_name] = PDFFile(os.path.join(self.directory_path, file_name))
+        # Add the file to the list
+        self.files.append(file_path)
         return file_name
     
     def remove_file(self, file_name):
         # Get the file object
-        file = next(file for file in self.files if file.id == file_name)
-        # Remove the file from the directory
-        file.remove_file()
-        # Remove the file object
-        del self.files[file_name]
+        file = os.path.join(self.directory_path, file_name)
+        if file:
+            # Remove the file from the directory
+            os.remove(file)
+            # Remove the file from list
+            self.files.remove(file)
+        else:
+            raise FileNotFoundError(f"File {file_name} not found")
     
     def get_file(self, file_name):
-        # Get the file object
-        file = next(file for file in self.files if file.id == file_name)
-        # Return the file object
-        return file
+        file = next((file for file in self.files if file.endswith(file_name)), None)
+        if file:
+            # Return the file object
+            return file
+        else:
+            raise FileNotFoundError(f"File {file_name} not found")
 
 # Check if pdfs dir exists
 if not os.path.exists('pdfs'):
