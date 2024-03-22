@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 async def root():
     return {"message": "Hello There"}
 
-@app.get("/pdf/upload")
+@app.post("/pdf/upload")
 async def upload_pdf(file: Annotated[bytes, File()], name: str = Form(..., description="File name")):
     logger.log(
         logging.INFO,
