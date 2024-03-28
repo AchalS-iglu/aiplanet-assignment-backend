@@ -8,7 +8,7 @@ from lib.conversation import answer_question
 app = FastAPI()
 logger = logging.getLogger(__name__)
 
-@app.get("/", status_code=200)
+@app.get("/pdf/status", status_code=200)
 async def root():
     # test error 500
     return Response(content="Hello World", media_type="text/plain")
