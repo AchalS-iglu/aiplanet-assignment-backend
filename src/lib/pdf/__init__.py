@@ -9,7 +9,7 @@ class _PDFHandler:
         # Set the directory path
         self.directory_path = directory_path
         # Get all the files in the directory and make their objects
-        self.files = [os.path.join(directory_path, file) for file in os.listdir(directory_path) if file.endswith('.pdf')]
+        self.files = [file for file in os.listdir(directory_path) if file.endswith('.pdf')]
     
     def add_file(self, bytes, file_name):
         # Check for duplicates
@@ -27,27 +27,27 @@ class _PDFHandler:
         return file_name
     
     def remove_file(self, file_name):
-        # Get the file object
+        # Get the file name
         file = os.path.join(self.directory_path, file_name)
         if file:
             # Remove the file from the directory
-            os.remove(file)
+            os.remove(file_name)
             # Remove the file from list
             self.files.remove(file)
         else:
             raise FileNotFoundError(f"File {file_name} not found")
     
-    def get_filename(self, file_name):
+    def get_filepath(self, file_name):
         file = next((file for file in self.files if file.endswith(file_name)), None)
         if file:
             # Return the file object
-            return file
+            return os.path.join(self.directory_path, file)
         else:
             raise FileNotFoundError(f"File {file_name} not found")
     
     def get_file(self, file_name):
         # get the file path
-        file = self.get_filename(file_name)
+        file = self.get_filepath(file_name)
         # retrieve the file 
         with open(file, 'rb') as f:
             return f.read()
@@ -56,5 +56,6 @@ class _PDFHandler:
 if not os.path.exists('pdfs'):
     # Create the directory
     os.mkdir('pdfs')
+
 # Create a new PDFHandler object
 PDFHandler = _PDFHandler('pdfs')

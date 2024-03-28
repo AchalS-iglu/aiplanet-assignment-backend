@@ -8,11 +8,12 @@ from lib.conversation import answer_question
 app = FastAPI()
 logger = logging.getLogger(__name__)
 
-@app.get("/")
+@app.get("/", status_code=200)
 async def root():
-    return {"message": "Hello There"}
+    # test error 500
+    return Response(content="Hello World", media_type="text/plain")
 
-@app.post("/pdf/upload")
+@app.post("/pdf/upload", status_code=201)
 async def upload_pdf(file: Annotated[bytes, File()], name: str = Form(..., description="File name")):
     logger.log(
         logging.INFO,
@@ -22,7 +23,7 @@ async def upload_pdf(file: Annotated[bytes, File()], name: str = Form(..., descr
     PDFHandler.add_file(file, name)
     return {"message": "PDF uploaded successfully"}
 
-@app.get("/pdf/getlist")
+@app.get("/pdf/getlist", status_code=200)
 async def get_pdf_list():
     logger.log(
         logging.INFO,
@@ -31,7 +32,7 @@ async def get_pdf_list():
     # Code to get the list of PDFs
     return {"files": PDFHandler.files}
 
-@app.delete("/pdf/remove")
+@app.delete("/pdf/remove", status_code=200)
 async def remove_pdf(file: str):
     logger.log(
         logging.INFO,
@@ -41,7 +42,7 @@ async def remove_pdf(file: str):
     PDFHandler.remove_file(file)
     return {"message": "File removed successfully"}
 
-@app.get("/pdf/get")
+@app.get("/pdf/get", status_code=200)
 async def get_pdf(file: str):
     logger.log(
         logging.INFO,
@@ -58,15 +59,15 @@ async def get_pdf(file: str):
     return response
     
 
-@app.post("/conversation/ask")
+@app.post("/conversation/ask", status_code=200)
 async def ask_question(question: str, file: str):
     # get file path
-    file = PDFHandler.get_filename(file)
+    file = PDFHandler.get_filepath(file)
     logger.log(
         logging.INFO,
         f"Received question: {question} for file: {file}"
     )
-    answer = answer_question(question, file)
+    answer = answer_question(question, PDFHandler.get_filepath(file))
     return {"answer": answer}
 
 
