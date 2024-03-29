@@ -61,8 +61,6 @@ async def get_pdf(file: str):
 
 @app.post("/conversation/ask", status_code=200)
 async def ask_question(question: str, file: str):
-    # get file path
-    file = PDFHandler.get_filepath(file)
     logger.log(
         logging.INFO,
         f"Received question: {question} for file: {file}"

@@ -40,7 +40,7 @@ class _PDFHandler:
     def get_filepath(self, file_name):
         file = next((file for file in self.files if file.endswith(file_name)), None)
         if file:
-            # Return the file object
+            # Return the file path
             return os.path.join(self.directory_path, file)
         else:
             raise FileNotFoundError(f"File {file_name} not found")
